@@ -1,111 +1,89 @@
+@import "tailwindcss";
+
+@theme {
+  --font-card: "Space Grotesk", sans-serif;
+  --font-telemetry: "Space Mono", monospace;
+  --font-sans: "Manrope", sans-serif;
+
+  --color-primary: var(--color-primary);
+  --color-primary-container: var(--color-primary-container);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-container: var(--color-secondary-container);
+  --color-error: var(--color-error);
+
+  --color-bg-canvas: var(--bg-canvas);
+  --color-bg-surface: var(--bg-surface);
+  --color-bg-surface-elevated: var(--bg-surface-elevated);
+  --color-bg-surface-card: var(--bg-surface-card);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-inverted: var(--text-inverted);
+}
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* LIGHT: Tactile Duet Tabletop */
+  --bg-canvas: #fef8f3;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f2ede8;
+  --bg-surface-card: #f8f3ee;
+  --border-surface: #bdcabf;
+  --border-card: #e6e2dd;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --color-primary: #006a42;
+  --color-primary-container: #128556;
+  --color-secondary: #7c5800;
+  --color-secondary-container: #fdc352;
+  --color-error: #ba1a1a;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --text-primary: #1d1b19;
+  --text-secondary: #3e4941;
+  --text-inverted: #ffffff;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --shadow-card: 0 3px 0 #ded9d4;
+  --shadow-card-lift: 0 6px 0 #ded9d4, 0 8px 16px rgba(0, 0, 0, 0.06);
+  --shadow-btn: 0 3px 0 #005232;
+
+  --dot-color: #d4cebf;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+.dark {
+  /* DARK: Tactile Field Operative */
+  --bg-canvas: #0a151b;
+  --bg-surface: #131d24;
+  --bg-surface-elevated: #172128;
+  --bg-surface-card: #1c2933;
+  --border-surface: #334155;
+  --border-card: #3c4a42;
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
+  --color-primary: #10b981;
+  --color-primary-container: #064e3b;
+  --color-secondary: #f59e0b;
+  --color-secondary-container: #ee9800;
+  --color-error: #ef4444;
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-inverted: #0f172a;
+
+  --shadow-card: 0 3px 0 rgba(0, 0, 0, 0.45);
+  --shadow-card-lift: 0 6px 0 rgba(0, 0, 0, 0.5), 0 10px 20px rgba(0, 0, 0, 0.6);
+  --shadow-btn: 0 3px 0 #047857;
+
+  --dot-color: #212d38;
 }
 
 body {
   margin: 0;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.tactical-tabletop {
+  background-color: var(--bg-canvas);
+  background-image: radial-gradient(var(--dot-color) 1.2px, transparent 1.2px);
+  background-size: 16px 16px;
 }
