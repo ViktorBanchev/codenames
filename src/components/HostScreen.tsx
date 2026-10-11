@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check, ArrowRight, BookOpen, Sparkles, Sun, Moon, ArrowLeft } from 'lucide-react';
+import { Copy, Check, ArrowRight, BookOpen, Sparkles, Sun, Moon, ArrowLeft, Sliders, ShieldAlert, Clock, Infinity as InfinityIcon } from 'lucide-react';
 import { createDuetRoom } from '../utils/duetLogic';
 
 interface HostScreenProps {
@@ -24,6 +24,10 @@ export function HostScreen({
     const [roomCode] = useState(() => Math.floor(1000 + Math.random() * 9000).toString());
     const [copied, setCopied] = useState(false);
     const [useCustomPack, setUseCustomPack] = useState(false);
+    // 99 = Unlimited (∞)
+    const [timeTokens, setTimeTokens] = useState<number>(9);
+    const [maxMistakes, setMaxMistakes] = useState<number>(2);
+    const [launching, setLaunching] = useState(false);
 
     const handleCopy = () => {
         navigator.clipboard.writeText(roomCode);
@@ -32,8 +36,17 @@ export function HostScreen({
     };
 
     const handleStart = async () => {
-        await createDuetRoom(roomCode, useCustomPack && selectedPackId ? selectedPackId : undefined);
-        onLaunch(roomCode);
+        setLaunching(true);
+        try {
+            await createDuetRoom(
+                roomCode,
+                useCustomPack && selectedPackId ? selectedPackId : undefined,
+                { turnsLimit: timeTokens, maxMistakes: maxMistakes }
+            );
+            onLaunch(roomCode);
+        } finally {
+            setLaunching(false);
+        }
     };
 
     return (
@@ -56,19 +69,20 @@ export function HostScreen({
 
                 <div className="my-4">
                     <span className="font-telemetry text-[10px] font-bold uppercase tracking-widest text-primary">
-                        ● Cooperative Intelligence Setup
+                        ● Room Configuration
                     </span>
                     <h1 className="font-card text-2xl font-bold tracking-tight text-text-primary mt-1">
-                        Host New Mission
+                        Host Mission
                     </h1>
                     <p className="text-xs text-text-secondary mt-0.5">
-                        Configure room parameters and pass the code to your partner.
+                        Configure difficulty parameters and share the cipher code with Operative B.
                     </p>
                 </div>
 
+                {/* Code Box */}
                 <div className="p-4 rounded-xl bg-surface border border-surface shadow-sm mb-4">
                     <div className="font-telemetry text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1">
-                        Secret Cipher Code
+                        Cipher Code
                     </div>
                     <div className="flex items-center justify-between">
                         <span className="text-2xl font-bold font-telemetry tracking-widest text-primary">
@@ -84,16 +98,68 @@ export function HostScreen({
                     </div>
                 </div>
 
+                {/* Mission Parameters */}
+                <div className="p-4 rounded-xl bg-surface border border-surface shadow-sm mb-4 space-y-3.5">
+                    <div className="flex items-center gap-1.5 font-telemetry text-[11px] font-bold uppercase tracking-wider text-text-secondary">
+                        <Sliders size={14} className="text-primary" /> Tactical Constraints
+                    </div>
+
+                    {/* Time Tokens Selector */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <Clock size={16} className="text-secondary" />
+                            <div>
+                                <div className="text-xs font-bold font-card">Time Tokens</div>
+                                <div className="text-[10px] text-text-secondary">Rounds before sudden death</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1 bg-surface-elevated border border-surface rounded-lg p-1">
+                            {[8, 9, 10, 11, 99].map((val) => (
+                                <button
+                                    key={val}
+                                    onClick={() => setTimeTokens(val)}
+                                    className={`w-7 h-6 rounded text-xs font-telemetry font-bold flex items-center justify-center transition ${timeTokens === val ? 'bg-primary text-text-inverted' : 'text-text-secondary'
+                                        }`}
+                                >
+                                    {val === 99 ? <InfinityIcon size={13} /> : val}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Mistakes Selector */}
+                    <div className="flex items-center justify-between pt-2 border-t border-surface">
+                        <div className="flex items-center gap-2">
+                            <ShieldAlert size={16} className="text-error" />
+                            <div>
+                                <div className="text-xs font-bold font-card">Bystander Allowance</div>
+                                <div className="text-[10px] text-text-secondary">Max innocent strikes</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-1 bg-surface-elevated border border-surface rounded-lg p-1">
+                            {[1, 2, 3, 4, 99].map((val) => (
+                                <button
+                                    key={val}
+                                    onClick={() => setMaxMistakes(val)}
+                                    className={`w-7 h-6 rounded text-xs font-telemetry font-bold flex items-center justify-center transition ${maxMistakes === val ? 'bg-primary text-text-inverted' : 'text-text-secondary'
+                                        }`}
+                                >
+                                    {val === 99 ? <InfinityIcon size={13} /> : val}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Word Deck Selection */}
                 <div className="space-y-2">
                     <div className="font-telemetry text-[11px] font-bold uppercase tracking-wider text-text-secondary">
-                        Word Deck & Vocabulary
+                        Vocabulary Deck
                     </div>
 
                     <button
                         onClick={() => setUseCustomPack(false)}
-                        className={`w-full p-3.5 rounded-xl text-left border flex items-center justify-between transition ${!useCustomPack
-                                ? 'bg-surface border-primary'
-                                : 'bg-surface/50 border-surface'
+                        className={`w-full p-3.5 rounded-xl text-left border flex items-center justify-between transition ${!useCustomPack ? 'bg-surface border-primary' : 'bg-surface/50 border-surface'
                             }`}
                     >
                         <div className="flex items-center gap-3">
@@ -109,9 +175,7 @@ export function HostScreen({
                     </button>
 
                     <div
-                        className={`p-3.5 rounded-xl border transition ${useCustomPack
-                                ? 'bg-surface border-primary'
-                                : 'bg-surface/50 border-surface'
+                        className={`p-3.5 rounded-xl border transition ${useCustomPack ? 'bg-surface border-primary' : 'bg-surface/50 border-surface'
                             }`}
                     >
                         <div className="flex items-center justify-between mb-2 cursor-pointer" onClick={() => setUseCustomPack(true)}>
@@ -149,10 +213,11 @@ export function HostScreen({
 
             <footer className="pt-4 shrink-0">
                 <button
+                    disabled={launching}
                     onClick={handleStart}
                     className="w-full py-3.5 rounded-xl bg-primary hover:opacity-95 text-text-inverted font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-btn active:translate-y-0.5"
                 >
-                    <span>Launch Mission Room</span>
+                    <span>{launching ? 'INITIALIZING MISSION...' : 'Launch Mission Room'}</span>
                     <ArrowRight size={16} />
                 </button>
             </footer>
